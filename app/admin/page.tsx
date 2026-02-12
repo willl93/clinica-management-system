@@ -52,7 +52,7 @@ export default async function AdminDashboard() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y">
-                                {metrics.clinics.map((clinic: any) => (
+                                {(metrics.clinics || []).map((clinic: any) => (
                                     <tr key={clinic.id} className="group hover:bg-gray-50">
                                         <td className="py-3">
                                             <div className="font-medium text-gray-900">{clinic.name}</div>
