@@ -68,18 +68,12 @@ export default async function Page() {
                 <div className="bg-white shadow rounded-lg p-6">
                     <h3 className="font-bold text-gray-900 mb-4">Bem-vindo(a), {session.user?.name}</h3>
                     <div className="space-y-4 text-sm">
-                        <div className="flex justify-between border-b pb-2">
-                            <span className="text-gray-500">Perfil:</span>
-                            <span className="font-mono bg-blue-50 px-2 py-0.5 rounded text-blue-700">{(session.user as any).role}</span>
-                        </div>
+
                         <div className="flex justify-between border-b pb-2">
                             <span className="text-gray-500">Email:</span>
                             <span>{session.user?.email || (session.user as any).username}</span>
                         </div>
-                        <div className="flex justify-between border-b pb-2">
-                            <span className="text-gray-500">ID Clínica:</span>
-                            <span className="font-mono text-gray-400">{(session.user as any).clinicId}</span>
-                        </div>
+
                     </div>
 
                     <form

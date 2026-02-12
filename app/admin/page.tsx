@@ -35,58 +35,41 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Growth Chart */}
-                <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
-                    <h2 className="text-xl font-bold mb-6 text-gray-800">Growth (Last 6 Months)</h2>
-                    <div className="h-80 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={metrics.chartData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis dataKey="name" />
-                                <YAxis />
-                                <Tooltip
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Bar dataKey="patients" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
+            {/* Growth Chart Removed */}
 
-                {/* Clinics List */}
-                <div className="bg-white p-6 rounded-xl shadow-sm">
-                    <h2 className="text-xl font-bold mb-6 text-gray-800">Active Clinics</h2>
-                    <div className="overflow-y-auto max-h-[400px]">
-                        <table className="w-full text-left">
-                            <thead className="text-gray-500 text-sm border-b">
-                                <tr>
-                                    <th className="pb-3 font-medium">Name</th>
-                                    <th className="pb-3 font-medium text-right">Patients</th>
+            {/* Clinics List */}
+            <div className="col-span-1 lg:col-span-3 bg-white p-6 rounded-xl shadow-sm">
+                <h2 className="text-xl font-bold mb-6 text-gray-800">Active Clinics</h2>
+                <div className="overflow-y-auto max-h-[400px]">
+                    <table className="w-full text-left">
+                        <thead className="text-gray-500 text-sm border-b">
+                            <tr>
+                                <th className="pb-3 font-medium">Name</th>
+                                <th className="pb-3 font-medium text-right">Patients</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y">
+                            {metrics.clinics.map((clinic: any) => (
+                                <tr key={clinic.id} className="group hover:bg-gray-50">
+                                    <td className="py-3">
+                                        <div className="font-medium text-gray-900">{clinic.name}</div>
+                                        <div className="text-xs text-gray-400">
+                                            Since {new Date(clinic.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </td>
+                                    <td className="py-3 text-right font-medium text-gray-700">
+                                        {clinic.patientCount}
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="divide-y">
-                                {metrics.clinics.map((clinic: any) => (
-                                    <tr key={clinic.id} className="group hover:bg-gray-50">
-                                        <td className="py-3">
-                                            <div className="font-medium text-gray-900">{clinic.name}</div>
-                                            <div className="text-xs text-gray-400">
-                                                Since {new Date(clinic.createdAt).toLocaleDateString()}
-                                            </div>
-                                        </td>
-                                        <td className="py-3 text-right font-medium text-gray-700">
-                                            {clinic.patientCount}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className="mt-4 pt-4 border-t text-center">
-                        <button className="text-sm text-blue-600 hover:underline">View All Clinics</button>
-                    </div>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+                <div className="mt-4 pt-4 border-t text-center">
+                    <button className="text-sm text-blue-600 hover:underline">View All Clinics</button>
                 </div>
             </div>
         </div>
+
     )
 }
