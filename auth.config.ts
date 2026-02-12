@@ -24,13 +24,26 @@ export const authConfig = {
     callbacks: {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user
+            const role = (auth?.user as any)?.role
+
             const isOnDashboard = nextUrl.pathname.startsWith("/dashboard")
             const isOnAdmin = nextUrl.pathname.startsWith("/admin")
 
-            if (isOnDashboard || isOnAdmin) {
+            if (isOnDashboard) {
                 if (isLoggedIn) return true
                 return false // Redirect unauthenticated users to login page
-            } else if (isLoggedIn) {
+            }
+
+            if (isOnAdmin) {
+                if (isLoggedIn && role === 'SUPER_ADMIN') return true
+                if (isLoggedIn) return Response.redirect(new URL("/dashboard", nextUrl)) // Regular users go to dashboard
+                return false
+            }
+
+            if (isLoggedIn) {
+                if (role === 'SUPER_ADMIN') {
+                    return Response.redirect(new URL("/admin", nextUrl))
+                }
                 return Response.redirect(new URL("/dashboard", nextUrl))
             }
             return true
