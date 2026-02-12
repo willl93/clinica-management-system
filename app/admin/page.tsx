@@ -1,9 +1,7 @@
 import { auth } from "@/auth"
 import { getSaaSMetrics } from '@/app/lib/admin-actions'
+import ChartWrapper from '@/app/ui/admin/chart-wrapper'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
-
-const AdminChart = dynamic(() => import('@/app/ui/admin/admin-chart'), { ssr: false })
 
 export default async function AdminDashboard() {
     const session = await auth()
@@ -39,7 +37,7 @@ export default async function AdminDashboard() {
                 {/* Evolution Chart */}
                 <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
                     <h2 className="text-xl font-bold mb-6 text-gray-800">Evolução de Pacientes (6 Meses)</h2>
-                    <AdminChart data={metrics.chartData || []} />
+                    <ChartWrapper data={metrics.chartData || []} />
                 </div>
 
                 {/* Clinics List */}
