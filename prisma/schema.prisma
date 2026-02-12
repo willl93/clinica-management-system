@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Clinic {
+  id           String        @id @default(uuid())
+  name         String
+  address      String?
+  phone        String?
+  color        String        @default("#3B82F6") // Hex color for the agenda
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  
+  users        User[]
+  appointments Appointment[]
+  transactions Transaction[]
+  products     Product[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  username  String   @unique
+  password  String
+  role      String   // "MANAGER" or "PATIENT"
+  cpf       String?  @unique
+  birthDate DateTime?
+  phone     String?
+  clinicId  String?
+  clinic    Clinic?  @relation(fields: [clinicId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  appointments Appointment[] // As a patient
+  anamnesis    Anamnesis?
+  evolutions   Evolution[]
+  writtenEvolutions Evolution[] @relation("WrittenEvolutions")
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  quantity    Int      @default(0)
+  minStock    Int      @default(5) // Alert threshold
+  price       Float?
+  clinicId    String
+  clinic      Clinic   @relation(fields: [clinicId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  appointmentProducts AppointmentProduct[]
+}
+
+model Service {
+  id                String   @id @default(uuid())
+  name              String
+  price             Float
+  commissionPercent Float    @default(0)
+  unit              String?  // UI, ml, Unit, Session, etc.
+  productType       String?
+  
+  appointments      Appointment[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Appointment {
+  id               String   @id @default(uuid())
+  date             DateTime
+  status           String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  notes            String?
+  
+  patientId        String
+  patient          User     @relation(fields: [patientId], references: [id])
+  
+  clinicId         String
+  clinic           Clinic   @relation(fields: [clinicId], references: [id])
+
+  serviceId        String?
+  service          Service? @relation(fields: [serviceId], references: [id])
+
+  productsUsed     AppointmentProduct[]
+
+  totalAmount      Float    @default(0)
+  commissionAmount Float    @default(0)
+  
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  signature        String?  // Base64 or URL to signed document
+  transactions     Transaction[]
+}
+
+model AppointmentProduct {
+  id            String      @id @default(uuid())
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+  productId     String
+  product       Product     @relation(fields: [productId], references: [id])
+  quantity      Int
+  
+  createdAt     DateTime    @default(now())
+}
+
+model Transaction {
+  id              String       @id @default(uuid())
+  type            String       // "INCOME" or "EXPENSE"
+  amount          Float
+  description     String
+  status          String       @default("PAID") // PENDING, PAID, OVERDUE
+  paymentMethod   String       @default("CASH")
+  installments    Int          @default(1)
+  dueDate         DateTime     @default(now())
+  date            DateTime     @default(now())
+  
+  clinicId        String
+  clinic          Clinic       @relation(fields: [clinicId], references: [id])
+
+  appointmentId   String?
+  appointment     Appointment? @relation(fields: [appointmentId], references: [id])
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Anamnesis {
+  id        String   @id @default(uuid())
+  patientId String   @unique
+  patient   User     @relation(fields: [patientId], references: [id])
+  
+  content   String   // JSON or text
+  
+  updatedAt DateTime @updatedAt
+}
+
+model Evolution {
+  id        String   @id @default(uuid())
+  patientId String
+  patient   User     @relation(fields: [patientId], references: [id])
+  
+  content   String
+  date      DateTime @default(now())
+  
+  userId    String?
+  user      User?    @relation("WrittenEvolutions", fields: [userId], references: [id])
+  
+  createdAt DateTime @default(now())
+}
