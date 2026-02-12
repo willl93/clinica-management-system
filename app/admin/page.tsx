@@ -1,7 +1,9 @@
 import { auth } from "@/auth"
 import { getSaaSMetrics } from '@/app/lib/admin-actions'
-import AdminChart from '@/app/ui/admin/admin-chart'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+
+const AdminChart = dynamic(() => import('@/app/ui/admin/admin-chart'), { ssr: false })
 
 export default async function AdminDashboard() {
     const session = await auth()
