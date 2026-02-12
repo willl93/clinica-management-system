@@ -37,7 +37,7 @@ export default async function AdminDashboard() {
                 {/* Evolution Chart */}
                 <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
                     <h2 className="text-xl font-bold mb-6 text-gray-800">Evolução de Pacientes (6 Meses)</h2>
-                    <AdminChart data={metrics.chartData} />
+                    <AdminChart data={metrics.chartData || []} />
                 </div>
 
                 {/* Clinics List */}
