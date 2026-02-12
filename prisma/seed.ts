@@ -1,39 +1,45 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
+const { PrismaClient } = require('@prisma/client')
+const prisma = new PrismaClient()
+const bcrypt = require('bcryptjs')
 
 async function main() {
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const password = await bcrypt.hash('admin123', 10)
 
-    const clinic = await prisma.clinic.create({
-        data: {
-            name: 'Estetica Premium',
-            address: 'Rua das Flores, 123',
-        },
-    });
-
-    const user = await prisma.user.upsert({
-        where: { username: 'admin' },
+    // 1. Create Default Clinic
+    const clinic = await prisma.clinic.upsert({
+        where: { id: 'default-clinic' },
         update: {},
         create: {
-            name: 'Admin User',
-            username: 'admin',
-            password: hashedPassword,
-            role: 'MANAGER',
-            clinicId: clinic.id,
-        },
-    });
+            id: 'default-clinic',
+            name: 'Clínica Principal',
+            address: 'Rua Exemplo, 123',
+            phone: '(11) 99999-9999',
+            color: '#3B82F6'
+        }
+    })
 
-    console.log({ clinic, user });
+    // 2. Create Super Admin
+    const admin = await prisma.user.upsert({
+        where: { username: 'admin' },
+        update: { role: 'SUPER_ADMIN' },
+        create: {
+            name: 'Administrador',
+            username: 'admin',
+            password,
+            role: 'SUPER_ADMIN',
+            clinicId: clinic.id
+        }
+    })
+
+    console.log({ clinic, admin })
 }
 
 main()
     .then(async () => {
-        await prisma.$disconnect();
+        await prisma.$disconnect()
     })
     .catch(async (e) => {
-        console.error(e);
-        await prisma.$disconnect();
-        process.exit(1);
-    });
+        console.error(e)
+        await prisma.$disconnect()
+        process.exit(1)
+    })
